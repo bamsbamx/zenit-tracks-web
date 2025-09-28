@@ -15,10 +15,36 @@
 <div id="map"></div>
 <script>
     mapboxgl.accessToken = 'pk.eyJ1IjoiYmFtc2JhbXgiLCJhIjoiY21nM3Qwb21pMWRzejJpcXdlbnE4eGhpdCJ9.YZ_H1DMpkx42TE_SdzyCGA';
+
+    // Key for localStorage
+    const CAMERA_STORAGE_KEY = 'mapbox_camera';
+
+    // Restore camera state from localStorage
+    let initialCenter = [0, 0];
+    let initialZoom = 2;
+    let initialPadding = {top: 0, bottom: 0, left: 0, right: 0};
+    let initialBearing = 0;
+    let initialPitch = 0;
+
+    const savedCamera = localStorage.getItem(CAMERA_STORAGE_KEY);
+    if (savedCamera) {
+        try {
+            const cam = JSON.parse(savedCamera);
+            if (Array.isArray(cam.center) && cam.center.length === 2) initialCenter = cam.center;
+            if (typeof cam.zoom === "number") initialZoom = cam.zoom;
+            if (typeof cam.padding === "object" && cam.padding !== null) initialPadding = cam.padding;
+            if (typeof cam.bearing === "number") initialBearing = cam.bearing;
+            if (typeof cam.pitch === "number") initialPitch = cam.pitch;
+        } catch (e) {}
+    }
+
     const map = new mapboxgl.Map({
-        container: 'map', // container ID
-        center: [0, 0], // starting position [lng, lat]. Note that lat must be set between -90 and 90
-        zoom: 2, // starting zoom
+        container: 'map',
+        center: initialCenter,
+        zoom: initialZoom,
+        padding: initialPadding,
+        bearing: initialBearing,
+        pitch: initialPitch,
         projection: 'globe',
         style: 'mapbox://styles/bamsbamx/cm1khdwgu00np01qp4uwedovj',
     });
@@ -52,7 +78,31 @@
         // add the DEM source as a terrain layer with exaggerated height
         map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
     });
-</script>
 
+    function saveCameraState() {
+        const center = map.getCenter();
+        const zoom = map.getZoom();
+        const padding = map.getPadding ? map.getPadding() : {top: 0, bottom: 0, left: 0, right: 0};
+        const bearing = map.getBearing();
+        const pitch = map.getPitch();
+        localStorage.setItem(
+            CAMERA_STORAGE_KEY, 
+            JSON.stringify({
+                center: [center.lng, center.lat],
+                zoom: zoom,
+                padding: padding,
+                bearing: bearing,
+                pitch: pitch
+            })
+        );
+    }
+
+    map.on('moveend', saveCameraState);
+    map.on('zoomend', saveCameraState);
+    map.on('rotateend', saveCameraState);
+    map.on('pitchend', saveCameraState);
+    map.on('paddingend', saveCameraState);
+
+</script>
 </body>
 </html>
