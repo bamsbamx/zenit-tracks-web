@@ -47,6 +47,7 @@
         pitch: initialPitch,
         projection: 'globe',
         style: 'mapbox://styles/bamsbamx/cm1khdwgu00np01qp4uwedovj',
+		attributionControl: false, // added later using map.addControl(new mapboxgl.AttributionControl())
     });
 	
 	map.addControl(new mapboxgl.FullscreenControl());
@@ -67,6 +68,10 @@
 		unit: 'metric'
 	});
 	map.addControl(scale);
+	
+	map.addControl(new mapboxgl.AttributionControl({
+	    customAttribution: 'ZENIT Tracks'
+	}), 'bottom-right');
 
     map.on('style.load', () => {
         map.addSource('mapbox-dem', {
