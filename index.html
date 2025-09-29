@@ -9,10 +9,30 @@
     <style>
         body { margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        /* Bottom-right image styling */
+        #corner-image {
+            position: absolute;
+            right: 16px;
+            bottom: 32px;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
-<div id="map"></div>
+<div id="map">
+    <a href="https://zenit-tracks.com" target="_blank" rel="noopener">
+        <img 
+            id="corner-image"
+            src="assets/ic_app_logo_map/drawable-mdpi/ic_app_logo_map.png"
+            srcset="
+                assets/ic_app_logo_map/drawable-mdpi/ic_app_logo_map.png   1x,
+                assets/ic_app_logo_map/drawable-xhdpi/ic_app_logo_map.png   2x,
+                assets/ic_app_logo_map/drawable-xxhdpi/ic_app_logo_map.png   3x
+            "
+            alt="ZENIT Tracks logo"
+        />
+    </a>
+</div>
 <script>
     mapboxgl.accessToken = 'pk.eyJ1IjoiYmFtc2JhbXgiLCJhIjoiY21nM3Qwb21pMWRzejJpcXdlbnE4eGhpdCJ9.YZ_H1DMpkx42TE_SdzyCGA';
 
