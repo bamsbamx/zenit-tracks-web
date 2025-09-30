@@ -107,6 +107,7 @@
     const savedStyle = localStorage.getItem(MAP_STYLE_STORAGE_KEY);
     const initialStyle = savedStyle || 'mapbox://styles/bamsbamx/cm1khdwgu00np01qp4uwedovj';
     
+    let selectedLngLatMarker = null;
     let currentPopup = null;
     
     if (savedCamera) {
@@ -221,9 +222,14 @@
     map.on('paddingend', saveCameraState);
 
     map.on('click', (event) => {
+        if (selectedLngLatMarker) {
+            selectedLngLatMarker.remove();
+        }
+        
         if (currentPopup) {
             // Remove the existing popup if it exists
             currentPopup.remove();
+            currentPopup = null;
         }
         
         const lngLat = event.lngLat
@@ -238,7 +244,27 @@
                 `<strong>Coordinates:</strong> ${lngLat.lat.toFixed(6)}, ${lngLat.lng.toFixed(6)}<br/>` + 
                 `<strong>Altitude:</strong> ${elevation} m<br/>`
             )
-            .addTo(map);
+            
+        selectedLngLatMarker = new mapboxgl.Marker({
+            color: 'red',
+            scale: 0.8,
+            draggable: false,
+            anchor: 'top',
+            pitchAlignment: 'auto',
+            rotationAlignment: 'auto'
+        })
+            .setLngLat(lngLat)
+            .setPopup(currentPopup)
+            .addTo(map)
+            .togglePopup();
+            
+        currentPopup.on('close', () => {
+            if (selectedLngLatMarker) {
+                const m = selectedLngLatMarker;
+                selectedLngLatMarker = null; // prevents recursion
+                m.remove(); // this function calls currentPopup.on('close') event before exiting causing an endless loop ending in a stack overflow exception
+            }
+        });
     });
 
 </script>
