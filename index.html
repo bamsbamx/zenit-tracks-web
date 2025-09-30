@@ -165,6 +165,17 @@
     });
     
     const styleDropdown = document.getElementById('layer-chooser-dropdown');
+    if (initialStyle) {
+        const mapStyleDropdownItems = styleDropdown.querySelectorAll('a');
+        mapStyleDropdownItems.forEach(link => {
+            // If the link's data-style matches the style loaded by the map
+            if (link.getAttribute('data-style') === initialStyle) {
+                link.classList.add('dropdown-item-active-style');
+            } else {
+                link.classList.remove('dropdown-item-active-style');
+            }
+        });
+    }
     styleDropdown.addEventListener('click', (event) => {
         if (event.target.tagName === 'A') {
             event.preventDefault(); // Prevent the default anchor link behavior
