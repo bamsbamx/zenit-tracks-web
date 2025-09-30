@@ -16,10 +16,48 @@
             bottom: 32px;
             z-index: 10;
         }
+        .icon-button {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #1B1B1B;
+            background-color: #6650A4;
+            object-fit: cover;
+            position: absolute;
+            padding: 8px;
+            z-index: 10;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            z-index: 10;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 11;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown-content a:hover {background-color: #ddd;}
+        .dropdown:hover .dropdown-content {display: block;}
+        .dropdown:hover .icon-button {background-color: #D0BCFF;}
+        .dropdown-item-active-style {
+            font-weight: bold;
+            background-color: #f0f0f0; /* Light highlight */
+        }
     </style>
 </head>
 <body>
 <div id="map">
+
     <a href="https://zenit-tracks.com" target="_blank" rel="noopener">
         <img 
             id="corner-image"
@@ -32,6 +70,24 @@
             alt="ZENIT Tracks logo"
         />
     </a>
+    
+    <div class="dropdown"
+        id="layer-chooser-menu"
+        style="top: 104px; left: 8px;" >
+        <img 
+            id="layer-chooser-button"
+            class="icon-button"
+            src="assets/icons/layers.svg"
+            alt="Layers"
+        />
+        <div class="dropdown-content" id="layer-chooser-dropdown">
+            <a href="#" data-style="mapbox://styles/bamsbamx/cm1khdwgu00np01qp4uwedovj">Satellite</a>
+            <a href="#" data-style="mapbox://styles/mapbox/outdoors-v12">Terrain</a>
+            <a href="#" data-style="mapbox://styles/mapbox/light-v11">Light</a>
+            <a href="#" data-style="mapbox://styles/mapbox/dark-v11">Dark</a>
+        </div>
+    </div>
+    
 </div>
 <script>
     mapboxgl.accessToken = 'pk.eyJ1IjoiYmFtc2JhbXgiLCJhIjoiY21nM3Qwb21pMWRzejJpcXdlbnE4eGhpdCJ9.YZ_H1DMpkx42TE_SdzyCGA';
@@ -102,6 +158,26 @@
         });
         // add the DEM source as a terrain layer with exaggerated height
         map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
+    });
+    
+    const styleDropdown = document.getElementById('layer-chooser-dropdown');
+    styleDropdown.addEventListener('click', (event) => {
+        if (event.target.tagName === 'A') {
+            event.preventDefault(); // Prevent the default anchor link behavior
+
+            const newStyleUrl = event.target.getAttribute('data-style');
+
+            if (newStyleUrl) {
+                map.setStyle(newStyleUrl);
+
+                const links = styleDropdown.querySelectorAll('a');
+                links.forEach(link => {
+                    link.classList.remove('dropdown-item-active-style');
+                });
+
+                event.target.classList.add('dropdown-item-active-style');
+            }
+        }
     });
 
     function saveCameraState() {
