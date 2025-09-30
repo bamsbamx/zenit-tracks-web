@@ -107,6 +107,8 @@
     const savedStyle = localStorage.getItem(MAP_STYLE_STORAGE_KEY);
     const initialStyle = savedStyle || 'mapbox://styles/bamsbamx/cm1khdwgu00np01qp4uwedovj';
     
+    let currentPopup = null;
+    
     if (savedCamera) {
         try {
             const cam = JSON.parse(savedCamera);
@@ -217,6 +219,20 @@
     map.on('rotateend', saveCameraState);
     map.on('pitchend', saveCameraState);
     map.on('paddingend', saveCameraState);
+
+    map.on('click', (event) => {
+        if (currentPopup) {
+            // Remove the existing popup if it exists
+            currentPopup.remove();
+        }
+
+        currentPopup = new mapboxgl.Popup()
+            .setLngLat(event.lngLat)
+            .setHTML(
+                `<strong>Coordinates:</strong><br>Lng: ${event.lngLat.lng.toFixed(5)}, Lat: ${event.lngLat.lat.toFixed(5)}`
+            )
+            .addTo(map);
+    });
 
 </script>
 </body>
