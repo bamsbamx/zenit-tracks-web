@@ -92,8 +92,9 @@
 <script>
     mapboxgl.accessToken = 'pk.eyJ1IjoiYmFtc2JhbXgiLCJhIjoiY21nM3Qwb21pMWRzejJpcXdlbnE4eGhpdCJ9.YZ_H1DMpkx42TE_SdzyCGA';
 
-    // Key for localStorage
+    // Keys for localStorage
     const CAMERA_STORAGE_KEY = 'mapbox_camera';
+    const MAP_STYLE_STORAGE_KEY = 'mapbox_selected_style';
 
     // Restore camera state from localStorage
     let initialCenter = [0, 0];
@@ -103,6 +104,9 @@
     let initialPitch = 0;
 
     const savedCamera = localStorage.getItem(CAMERA_STORAGE_KEY);
+    const savedStyle = localStorage.getItem(MAP_STYLE_STORAGE_KEY);
+    const initialStyle = savedStyle || 'mapbox://styles/bamsbamx/cm1khdwgu00np01qp4uwedovj';
+    
     if (savedCamera) {
         try {
             const cam = JSON.parse(savedCamera);
@@ -122,7 +126,7 @@
         bearing: initialBearing,
         pitch: initialPitch,
         projection: 'globe',
-        style: 'mapbox://styles/bamsbamx/cm1khdwgu00np01qp4uwedovj',
+        style: initialStyle,
 		attributionControl: false, // added later using map.addControl(new mapboxgl.AttributionControl())
     });
 	
@@ -171,12 +175,11 @@
                 map.setStyle(newStyleUrl);
 
                 const links = styleDropdown.querySelectorAll('a');
-                links.forEach(link => {
-                    link.classList.remove('dropdown-item-active-style');
-                });
-
+                links.forEach(link => link.classList.remove('dropdown-item-active-style'));
                 event.target.classList.add('dropdown-item-active-style');
             }
+            
+            localStorage.setItem(MAP_STYLE_STORAGE_KEY, newStyleUrl);
         }
     });
 
