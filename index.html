@@ -225,11 +225,18 @@
             // Remove the existing popup if it exists
             currentPopup.remove();
         }
+        
+        const lngLat = event.lngLat
+        const elevation = Math.floor(
+            // Do not use terrain exaggeration to get actual meter values
+            map.queryTerrainElevation(lngLat, { exaggerated: false })
+        );
 
         currentPopup = new mapboxgl.Popup()
             .setLngLat(event.lngLat)
             .setHTML(
-                `<strong>Coordinates:</strong><br>Lng: ${event.lngLat.lng.toFixed(5)}, Lat: ${event.lngLat.lat.toFixed(5)}`
+                `<strong>Coordinates:</strong> ${lngLat.lat.toFixed(6)}, ${lngLat.lng.toFixed(6)}<br/>` + 
+                `<strong>Altitude:</strong> ${elevation} m<br/>`
             )
             .addTo(map);
     });
